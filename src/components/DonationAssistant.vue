@@ -8,7 +8,7 @@
       aria-label="Donation helper"
     >
       <header class="panel-head">
-        <OctoMascot :size="52" :mood="mood" class="head-mascot" />
+        <OctoMascot :size="66" :mood="mood" class="head-mascot" />
         <div class="head-text">
           <h2>Ask Orangopus</h2>
           <p>Questions about us or donating</p>
@@ -200,7 +200,7 @@ export default defineComponent({
       this.loading = false;
       if (actions.length) {
         this.celebrating = true;
-        setTimeout(() => { this.celebrating = false; }, 1500);
+        setTimeout(() => { this.celebrating = false; }, 2500);
       }
       this.focusAndScroll();
     },
@@ -297,7 +297,7 @@ export default defineComponent({
   padding: 14px 12px 14px 16px;
   border-bottom: 1px solid var(--line);
 }
-.head-mascot { margin: -8px -6px -8px -8px; }
+.head-mascot { margin: -12px -8px -12px -12px; }
 .head-text { flex: 1; min-width: 0; }
 .head-text h2 { margin: 0; font: 400 18px/1.2 "Funnel Display", "Manrope", Helvetica, Arial, sans-serif; }
 .head-text p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
