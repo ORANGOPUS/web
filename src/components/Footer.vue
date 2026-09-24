@@ -8,8 +8,8 @@
         <div class="footer-brand">
           <img
             class="logo"
-            alt="Opus Logo"
-            src="https://c.animaapp.com/bX3QfjDJ/img/simplification-1.svg"
+            alt="Orangopus"
+            src="/orangopus-logo-white.svg"
           />
           <p class="brand-description">
             A grassroots nonprofit open collective supporting creators of all backgrounds.
@@ -24,7 +24,7 @@
           </div>
           <div class="link-group">
             <h3>Support</h3>
-            <a href="https://opencollective.com/opus" class="footer-link">OpenCollective</a>
+            <router-link to="/donate" class="footer-link">Donate</router-link>
             <a href="https://help.opus.org" class="footer-link">Help Center</a>
             <a href="mailto:jordan@opus.org" class="footer-link">Contact</a>
           </div>

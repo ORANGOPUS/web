@@ -1,14 +1,17 @@
 <template>
   <div id="app">
     <router-view />
+    <DonationAssistant />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import DonationAssistant from '@/components/DonationAssistant.vue'
 
 export default defineComponent({
-  name: 'App'
+  name: 'App',
+  components: { DonationAssistant }
 })
 </script>
 

@@ -5,6 +5,13 @@
 [build.environment]
   NODE_VERSION = "18"
 
+# Donation helper API (netlify/functions/assistant.mjs). Must stay above the SPA fallback.
+[[redirects]]
+  from = "/api/assistant"
+  to = "/.netlify/functions/assistant"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
