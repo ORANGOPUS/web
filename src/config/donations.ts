@@ -68,6 +68,7 @@ export const donationTiers: DonationTier[] = [
   }
 ];
 
+/** Returns the Stripe Payment Link for an option, or null when it is unset or not a Stripe URL. */
 export function stripeLinkFor(frequency: DonationFrequency, amount: DonationAmount): string | null {
   const url = stripeLinks[frequency][amount];
   return url && /^https:\/\/(buy|donate)\.stripe\.com\//.test(url) ? url : null;

@@ -106,6 +106,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import type { LocationQuery } from "vue-router";
 import {
   donationCurrency,
   donationTiers,
@@ -114,17 +115,22 @@ import {
   type DonationFrequency
 } from "@/config/donations";
 
+/** Reads ?freq= and ?amount= into a valid selection, defaulting to a one-off £25. */
+function selectionFromQuery(query: LocationQuery): { frequency: DonationFrequency; amount: DonationAmount } {
+  const frequency: DonationFrequency = query.freq === "monthly" ? "monthly" : "once";
+  const requested = String(query.amount || "");
+  const valid: DonationAmount[] = ["5", "25", "100", "custom"];
+  let amount: DonationAmount = valid.includes(requested as DonationAmount)
+    ? (requested as DonationAmount)
+    : "25";
+  if (frequency === "monthly" && amount === "custom") amount = "25";
+  return { frequency, amount };
+}
+
 export default defineComponent({
   name: "DonatePage",
   data() {
-    const query = this.$route?.query || {};
-    const frequency: DonationFrequency = query.freq === "monthly" ? "monthly" : "once";
-    const requested = String(query.amount || "");
-    const valid: DonationAmount[] = ["5", "25", "100", "custom"];
-    let amount: DonationAmount = valid.includes(requested as DonationAmount)
-      ? (requested as DonationAmount)
-      : "25";
-    if (frequency === "monthly" && amount === "custom") amount = "25";
+    const { frequency, amount } = selectionFromQuery(this.$route?.query || {});
     return {
       frequency,
       amount,
@@ -153,6 +159,11 @@ export default defineComponent({
     }
   },
   watch: {
+    "$route.query"(query: LocationQuery) {
+      const selection = selectionFromQuery(query);
+      this.frequency = selection.frequency;
+      this.amount = selection.amount;
+    },
     frequency(value: DonationFrequency) {
       if (value === "monthly" && this.amount === "custom") this.amount = "25";
       this.notConfigured = false;

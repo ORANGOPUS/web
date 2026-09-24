@@ -1,11 +1,11 @@
 <template>
   <div class="thanks-page">
     <main class="thanks-main">
-      <span class="eyebrow">Donation received</span>
+      <span class="eyebrow">Thank you</span>
       <h1>Thank you. <span class="glow">You're part of the crew.</span></h1>
       <p class="lede">
-        Your gift is on its way. Stripe has emailed you a receipt, and we'll let you know what
-        your support helps launch.
+        Thank you for supporting Orangopus. Every gift helps keep our projects and community
+        open to everyone.
       </p>
       <div class="actions">
         <router-link to="/" class="btn">Back to home</router-link>
