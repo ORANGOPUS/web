@@ -25,6 +25,9 @@
           <Header />
         </div>
         <MissionStatement />
+        <div id="open-source">
+          <OpenSourceSection />
+        </div>
         <div id="github">
           <GitHubIntegration @share-repository="handleRepositoryShare" @import-repository="handleRepositoryImport" />
         </div>
@@ -90,6 +93,7 @@ import Navigation from "@/components/Navigation.vue";
 import Notification from "@/components/Notification.vue";
 import Header from "@/components/Header.vue";
 import MissionStatement from "@/components/MissionStatement.vue";
+import OpenSourceSection from "@/components/OpenSourceSection.vue";
 // @ts-ignore
 import GitHubIntegration from "@/components/GitHubIntegration.vue";
 // @ts-ignore
@@ -135,6 +139,7 @@ export default defineComponent({
     Notification,
     Header,
     MissionStatement,
+    OpenSourceSection,
     GitHubIntegration,
     SocialFeed,
     ProjectShowcase,
@@ -191,6 +196,8 @@ export default defineComponent({
         this.showDashboard = true;
       } else if (this.initialView === 'profile') {
         this.showProfile = true;
+      } else if (this.initialView === 'login') {
+        this.showAuthPage('login');
       }
     },
     
@@ -205,7 +212,7 @@ export default defineComponent({
       if (notification) {
         notification.success(
           'Welcome!',
-          'You have successfully signed in to Opus.'
+          'You have signed in to Orangopus.'
         );
       }
     },
@@ -409,5 +416,81 @@ export default defineComponent({
   .profile-header {
     padding: 20px;
   }
+}
+</style>
+
+<style>
+/*
+  Main page theme, matched to the donate page: warm charcoal ground with an orange glow,
+  Funnel Display headings in solid white, and soft bordered cards.
+  Selectors are prefixed with .opus-webapp .landing-page so they outrank component styles.
+*/
+.opus-webapp .landing-page {
+  --theme-orange: #ff913d;
+  --theme-ink: #1a0e05;
+  --theme-card: rgba(255, 255, 255, 0.04);
+  --theme-border: rgba(255, 255, 255, 0.1);
+  background:
+    radial-gradient(80% 60% at 90% 0%, rgba(255, 145, 61, 0.14), transparent 60%),
+    radial-gradient(60% 50% at 0% 100%, rgba(255, 145, 61, 0.06), transparent 60%),
+    linear-gradient(135deg, #0a0a0a 0%, #151515 50%, #0a0a0a 100%);
+}
+
+.opus-webapp .landing-page .press-kit-section {
+  background: transparent;
+}
+
+/* Headings */
+.opus-webapp .landing-page .header-title,
+.opus-webapp .landing-page .section-title,
+.opus-webapp .landing-page .cta-title {
+  font-family: "Funnel Display", "Manrope", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #ffffff;
+  background: none;
+  -webkit-text-fill-color: #ffffff;
+  animation: none;
+  text-wrap: balance;
+}
+
+.opus-webapp .landing-page .header-subtitle {
+  color: var(--theme-orange);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+}
+
+.opus-webapp .landing-page .highlight {
+  background: none;
+  -webkit-text-fill-color: var(--theme-orange);
+  color: var(--theme-orange);
+}
+
+/* Cards */
+.opus-webapp .landing-page .status-card,
+.opus-webapp .landing-page .stat-card,
+.opus-webapp .landing-page .repo-card,
+.opus-webapp .landing-page .post-card,
+.opus-webapp .landing-page .post-form,
+.opus-webapp .landing-page .project-card,
+.opus-webapp .landing-page .team-member,
+.opus-webapp .landing-page .faq-item,
+.opus-webapp .landing-page .kit-card {
+  background: var(--theme-card);
+  border: 1px solid var(--theme-border);
+  border-radius: 16px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+/* Buttons: sentence case, dark text on orange like the donate button */
+.opus-webapp .landing-page .btn {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 700;
+}
+
+.opus-webapp .landing-page .btn-primary {
+  color: var(--theme-ink);
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="section-background">
       <div class="floating-particles"></div>
     </div>
-    <h2 class="section-title animate-on-scroll">The Humans Behind Opus</h2>
+    <h2 class="section-title animate-on-scroll">The Humans Behind Orangopus</h2>
     <p class="section-description animate-on-scroll">
       Designers. Developers. Dreamers. These are the people shaping the
       galaxy with us.
@@ -27,6 +27,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { contentService } from "@/services/contentService";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import TeamMember from "./TeamMember.vue";
 import SocialIcons from "../icons/SocialIcons/SocialIcons.vue";
 
@@ -53,8 +55,12 @@ export default defineComponent({
       ],
     };
   },
-  mounted() {
+  async mounted() {
     this.observeElements();
+    // Admins edit the team in Supabase (team_members table); the list above is the fallback.
+    if (!isSupabaseConfigured) return;
+    const members = await contentService.getTeamMembers();
+    if (members.length) this.teamMembers = members.map(m => ({ name: m.name, role: m.role || "Team" }));
   },
   methods: {
     observeElements() {

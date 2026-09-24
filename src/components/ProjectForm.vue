@@ -10,6 +10,33 @@
     </div>
 
     <form @submit.prevent="handleSubmit" class="form">
+      <div v-if="!isEditing" class="writer">
+        <div class="writer-head">
+          <span class="writer-badge">AI</span>
+          <div>
+            <strong>Write it from GitHub</strong>
+            <p>Paste a public repository and the project writer drafts the listing from its README. Check it before saving.</p>
+          </div>
+        </div>
+        <div class="writer-row">
+          <label for="writer_repo" class="sr-only">GitHub repository link</label>
+          <input
+            id="writer_repo"
+            v-model="writerRepo"
+            type="text"
+            inputmode="url"
+            placeholder="https://github.com/orangopus/web"
+            :disabled="writing || loading"
+            @keydown.enter.prevent="writeFromGitHub"
+          />
+          <button type="button" class="writer-button" :disabled="writing || loading || !writerRepo.trim()" @click="writeFromGitHub">
+            <span v-if="writing" class="loading-spinner"></span>
+            {{ writing ? 'Writing…' : 'Draft it' }}
+          </button>
+        </div>
+        <p v-if="writerMessage" class="writer-message" :class="{ ok: writerOk }">{{ writerMessage }}</p>
+      </div>
+
       <div class="form-group">
         <label for="title">Project Title *</label>
         <input
@@ -173,6 +200,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { projectService, type Project, type CreateProjectData } from '@/services/projectService'
+import { supabase } from '@/lib/supabase'
 
 export default defineComponent({
   name: 'ProjectForm',
@@ -200,7 +228,11 @@ export default defineComponent({
       },
       newTechnology: '',
       loading: false,
-      error: ''
+      error: '',
+      writerRepo: '',
+      writing: false,
+      writerMessage: '',
+      writerOk: false
     }
   },
   computed: {
@@ -233,9 +265,46 @@ export default defineComponent({
         ...this.initialValues,
         technologies: this.initialValues.technologies ? [...this.initialValues.technologies] : []
       }
+      if (this.initialValues.github_url) this.writerRepo = this.initialValues.github_url
     }
   },
   methods: {
+    // Asks the project writer agent (server/project-writer.mjs) for a draft and fills the form with it.
+    async writeFromGitHub() {
+      const repo = this.writerRepo.trim()
+      if (!repo || this.writing) return
+      this.writing = true
+      this.writerMessage = ''
+      this.writerOk = false
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`
+        const res = await fetch('/api/project-writer', { method: 'POST', headers, body: JSON.stringify({ github_url: repo }) })
+        const data = await res.json().catch(() => null)
+        if (!res.ok || !data?.draft) {
+          this.writerMessage = data?.message || "The writer isn't available right now. You can fill in the form yourself."
+          return
+        }
+        const d = data.draft
+        this.form = {
+          ...this.form,
+          title: d.title || this.form.title,
+          description: d.description || this.form.description,
+          technologies: Array.isArray(d.technologies) && d.technologies.length ? d.technologies : this.form.technologies,
+          category: d.category || this.form.category,
+          difficulty_level: d.difficulty_level || this.form.difficulty_level,
+          github_url: d.github_url || this.form.github_url,
+          live_url: this.form.live_url || d.live_url || ''
+        }
+        this.writerOk = true
+        this.writerMessage = 'Draft ready. Read it through and change anything before you save.'
+      } catch {
+        this.writerMessage = "The writer isn't available right now. You can fill in the form yourself."
+      } finally {
+        this.writing = false
+      }
+    },
     addTechnology() {
       const tech = this.newTechnology.trim()
       if (tech && !this.form.technologies.includes(tech)) {
@@ -294,6 +363,83 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.writer {
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(255, 145, 61, 0.08);
+  border: 1px solid rgba(255, 145, 61, 0.3);
+  margin-bottom: 8px;
+}
+.writer-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.writer-head p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.writer-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #ff913d;
+  color: #1a1a1a;
+}
+.writer-row {
+  display: flex;
+  gap: 10px;
+}
+.writer-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font: inherit;
+}
+.writer-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: none;
+  background: #ff913d;
+  color: #1a1a1a;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.writer-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.writer-message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ffb3a1;
+}
+.writer-message.ok {
+  color: #9be29b;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .project-form {
   background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);

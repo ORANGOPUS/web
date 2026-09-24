@@ -93,8 +93,6 @@ class CommunityService {
           content: postData.content,
           post_type: postData.post_type,
           tags: postData.tags,
-          likes_count: 0,
-          comments_count: 0,
           github_repo: postData.github_repo,
           project_id: postData.project_id
         })
@@ -208,11 +206,6 @@ class CommunityService {
           .eq('post_id', postId)
           .eq('user_id', user.id)
 
-        // Update likes count
-        await supabase
-          .from('community_posts')
-          .update({ likes_count: supabase.rpc('decrement_likes', { post_id: postId }) })
-          .eq('id', postId)
       } else {
         // Like
         await supabase
@@ -222,11 +215,6 @@ class CommunityService {
             user_id: user.id
           })
 
-        // Update likes count
-        await supabase
-          .from('community_posts')
-          .update({ likes_count: supabase.rpc('increment_likes', { post_id: postId }) })
-          .eq('id', postId)
       }
 
       // Clear cache

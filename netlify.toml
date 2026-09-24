@@ -5,6 +5,25 @@
 [build.environment]
   NODE_VERSION = "18"
 
+# Server functions in netlify/functions/. These must stay above the SPA fallback.
+[[redirects]]
+  from = "/api/assistant"
+  to = "/.netlify/functions/assistant"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/github"
+  to = "/.netlify/functions/github"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/project-writer"
+  to = "/.netlify/functions/project-writer"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

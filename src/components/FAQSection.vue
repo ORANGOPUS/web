@@ -21,6 +21,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { contentService } from "@/services/contentService";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import FAQItem from "./FAQItem.vue";
 
 export default defineComponent({
@@ -31,16 +33,20 @@ export default defineComponent({
   data() {
     return {
       faqItems: [
-        { question: "What is Opus?", answer: "Opus is an open-source, non-profit collective dedicated to pushing the boundaries of project creation and innovation." },
-        { question: "Who is this for?", answer: "Opus is for creators, developers, dreamers, and anyone interested in collaborative, open-source projects." },
+        { question: "What is Orangopus?", answer: "Orangopus is a grassroots nonprofit open collective supporting creators of all backgrounds. No gatekeepers, no agendas." },
+        { question: "Who is this for?", answer: "Orangopus is for creators, developers, dreamers, and anyone interested in collaborative, open-source projects." },
         { question: "How do I get started?", answer: "You can start by exploring our projects on GitHub, joining our Discord community, or contributing to one of our open-source initiatives." },
-        { question: "How can I support the project?", answer: "You can support Opus by contributing code, sharing ideas, spreading the word, or making a donation to help fund our initiatives." },
+        { question: "How can I support the project?", answer: "You can support Orangopus by contributing code, sharing ideas, spreading the word, or making a donation to help fund our initiatives." },
         { question: "Where does all your money go?", answer: "As a non-profit, all funds go directly into supporting our projects, maintaining our infrastructure, and furthering our mission of accessible innovation." },
       ],
     };
   },
-  mounted() {
+  async mounted() {
     this.observeElements();
+    // Admins edit the FAQs in Supabase (faqs table); the list above is the fallback.
+    if (!isSupabaseConfigured) return;
+    const faqs = await contentService.getFAQs();
+    if (faqs.length) this.faqItems = faqs.map(f => ({ question: f.question, answer: f.answer }));
   },
   methods: {
     observeElements() {

@@ -281,9 +281,6 @@ class ProjectService {
         if (unlikeError) {
           return { success: false, error: unlikeError.message }
         }
-
-        // Decrement likes count
-        await supabase.rpc('decrement_project_likes', { project_id: projectId })
       } else {
         // Like
         const { error: likeError } = await supabase
@@ -296,9 +293,6 @@ class ProjectService {
         if (likeError) {
           return { success: false, error: likeError.message }
         }
-
-        // Increment likes count
-        await supabase.rpc('increment_project_likes', { project_id: projectId })
       }
 
       // Clear cache

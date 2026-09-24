@@ -7,12 +7,33 @@
       "config": {
         "distDir": "dist"
       }
+    },
+    {
+      "src": "api/*.mjs",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "server/**"
+        ]
+      }
     }
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/assistant",
+      "destination": "/api/assistant.mjs"
+    },
+    {
+      "source": "/api/github",
+      "destination": "/api/github.mjs"
+    },
+    {
+      "source": "/api/project-writer",
+      "destination": "/api/project-writer.mjs"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
-} 
+}

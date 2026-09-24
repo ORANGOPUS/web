@@ -11,7 +11,7 @@
     
     <div class="donate-panel" v-if="isExpanded">
       <div class="panel-header">
-        <h3>Support Opus</h3>
+        <h3>Support Orangopus</h3>
         <button @click="toggleExpand" class="close-btn">
           <svg viewBox="0 0 24 24" fill="currentColor" class="close-icon">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -21,14 +21,14 @@
       
       <div class="panel-content">
         <p class="support-text">
-          Help us continue building amazing tools for developers. Your support enables us to:
+          Orangopus is a grassroots nonprofit open collective supporting creators of all backgrounds. Your donation helps us:
         </p>
         
         <ul class="benefits-list">
-          <li>✨ Keep the platform free and open source</li>
-          <li>🚀 Add new features and improvements</li>
-          <li>🛠️ Maintain and support the community</li>
-          <li>📚 Create educational content and tutorials</li>
+          <li>🪐 Keep Orangopus free and open to everyone</li>
+          <li>🚀 Back new community projects</li>
+          <li>🛰️ Maintain the infrastructure our projects run on</li>
+          <li>🌌 Make creation accessible to people of any background</li>
         </ul>
         
         <div class="donation-options">
@@ -40,42 +40,24 @@
               class="amount-btn"
               :class="{ 'selected': selectedAmount === amount }"
             >
-              ${{ amount }}
+              {{ currency }}{{ amount }}
             </button>
-          </div>
-          
-          <div class="custom-amount">
-            <label for="custom-amount">Custom Amount:</label>
-            <input 
-              id="custom-amount"
-              v-model="customAmount"
-              type="number"
-              min="1"
-              placeholder="Enter amount"
-              class="custom-input"
-              @input="selectCustomAmount"
-            />
           </div>
         </div>
         
-        <a 
-          :href="opencollectiveUrl"
-          target="_blank"
-          rel="noopener noreferrer"
+        <router-link
+          :to="{ path: '/donate', query: { amount: selectedAmount } }"
           class="donate-link"
           @click="handleDonate"
         >
           <div class="donate-cta">
-            <span class="cta-text">Donate via OpenCollective</span>
-            <svg viewBox="0 0 24 24" fill="currentColor" class="external-icon">
-              <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
-            </svg>
+            <span class="cta-text">Donate {{ currency }}{{ selectedAmount }} with Stripe</span>
           </div>
-        </a>
+        </router-link>
         
         <div class="donation-info">
-          <p>💝 All donations are processed securely through OpenCollective</p>
-          <p>🔒 Your information is protected and never shared</p>
+          <p>🔒 Payments are processed securely by Stripe</p>
+          <p>You can give once or monthly on the next page</p>
         </div>
       </div>
     </div>
@@ -84,16 +66,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { donationCurrency } from "@/config/donations";
 
 export default defineComponent({
   name: "DonateButton",
   data() {
     return {
       isExpanded: false,
-      selectedAmount: 10,
-      customAmount: "",
-      donationAmounts: [5, 10, 25, 50, 100],
-      opencollectiveUrl: "https://opencollective.com/opus"
+      selectedAmount: "25",
+      donationAmounts: ["5", "25", "100"],
+      currency: donationCurrency
     };
   },
   methods: {
@@ -101,21 +83,11 @@ export default defineComponent({
       this.isExpanded = !this.isExpanded;
     },
     
-    selectAmount(amount: number) {
+    selectAmount(amount: string) {
       this.selectedAmount = amount;
-      this.customAmount = "";
-    },
-    
-    selectCustomAmount() {
-      if (this.customAmount) {
-        this.selectedAmount = parseInt(this.customAmount);
-      }
     },
     
     handleDonate() {
-      // Add analytics tracking if needed
-      console.log('Donate clicked:', this.selectedAmount);
-      
       // Close the panel after a short delay
       setTimeout(() => {
         this.isExpanded = false;
@@ -129,7 +101,8 @@ export default defineComponent({
 .donate-button-container {
   position: fixed;
   bottom: 30px;
-  right: 30px;
+  /* Bottom-left, so it never sits under the helper chat in the bottom-right corner */
+  left: 30px;
   z-index: 1000;
   font-family: "Manrope", Helvetica, Arial, sans-serif;
 }
@@ -179,7 +152,7 @@ export default defineComponent({
 .donate-panel {
   position: absolute;
   bottom: 70px;
-  right: 0;
+  left: 0;
   width: 320px;
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(20px);
@@ -411,12 +384,12 @@ export default defineComponent({
 @media (max-width: 768px) {
   .donate-button-container {
     bottom: 20px;
-    right: 20px;
+    left: 20px;
   }
   
   .donate-panel {
     width: 280px;
-    right: -20px;
+    left: 0;
   }
   
   .donation-amounts {
@@ -436,7 +409,7 @@ export default defineComponent({
 @media (max-width: 480px) {
   .donate-panel {
     width: calc(100vw - 40px);
-    right: -20px;
+    left: 0;
   }
 }
 </style> 

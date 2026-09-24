@@ -3,8 +3,12 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.VUE_APP_SUPABASE_URL || 'https://dummy-project.supabase.co'
 const supabaseAnonKey = process.env.VUE_APP_SUPABASE_ANON_KEY || 'dummy-anon-key'
 
-if (!process.env.VUE_APP_SUPABASE_URL) {
-  console.warn('Missing Supabase environment variables. Using dummy credentials. Please create a .env file.');
+// False until VUE_APP_SUPABASE_URL and VUE_APP_SUPABASE_ANON_KEY are set in the host's env vars.
+// Pages use it to show "not switched on yet" instead of failing requests.
+export const isSupabaseConfigured = Boolean(process.env.VUE_APP_SUPABASE_URL && process.env.VUE_APP_SUPABASE_ANON_KEY)
+
+if (!isSupabaseConfigured) {
+  console.warn('Supabase is not configured: set VUE_APP_SUPABASE_URL and VUE_APP_SUPABASE_ANON_KEY.');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)

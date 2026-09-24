@@ -8,8 +8,8 @@
       <div class="auth-card">
         <div class="auth-header">
           <div class="logo-section">
-            <img src="https://c.animaapp.com/bX3QfjDJ/img/simplification.svg" alt="Opus" class="auth-logo" />
-            <h1 class="auth-title">Welcome to Opus</h1>
+            <img src="/orangopus-icon.svg" alt="" class="auth-logo" />
+            <h1 class="auth-title">Welcome to Orangopus</h1>
             <p class="auth-subtitle">Join our inclusive community of creators</p>
           </div>
           
@@ -34,6 +34,16 @@
             Sign Up
           </button>
         </div>
+
+        <div v-if="!signInEnabled" class="error-message setup-note">
+          Sign-in isn't switched on yet. It starts working once the site is connected to Supabase.
+        </div>
+
+        <button type="button" class="github-button" :disabled="authState.loading || !signInEnabled" @click="signInWithGitHub">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Continue with GitHub
+        </button>
+        <div class="auth-divider"><span>or use email</span></div>
 
         <form @submit.prevent="handleSubmit" class="auth-form">
           <div class="form-group">
@@ -133,6 +143,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { authService, AuthState } from "@/services/authService";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 interface FormData {
   email: string;
@@ -164,7 +175,8 @@ export default defineComponent({
       } as AuthState,
       unsubscribe: () => {},
       signupSuccess: false,
-      resendLoading: false
+      resendLoading: false,
+      signInEnabled: isSupabaseConfigured
     };
   },
   watch: {
@@ -184,6 +196,10 @@ export default defineComponent({
     this.unsubscribe();
   },
   methods: {
+    async signInWithGitHub() {
+      await authService.signInWithGitHub();
+    },
+
     async handleSubmit() {
       if (this.isLogin) {
         const result = await authService.signIn(this.form.email, this.form.password);
@@ -222,6 +238,43 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.setup-note {
+  margin-bottom: 16px;
+}
+.github-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #161b22;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.github-button svg { width: 20px; height: 20px; }
+.github-button:disabled { opacity: 0.5; cursor: not-allowed; }
+.github-button:not(:disabled):hover { border-color: #ff913d; }
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
 .auth-page {
   position: fixed;
   top: 0;
@@ -230,7 +283,7 @@ export default defineComponent({
   bottom: 0;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 10000;
   overflow-y: auto;
@@ -270,7 +323,8 @@ export default defineComponent({
 .auth-container {
   width: 100%;
   max-width: 500px;
-  margin: 0 auto;
+  /* auto margins centre the card but let it scroll when it's taller than the screen */
+  margin: auto;
 }
 
 .auth-card {

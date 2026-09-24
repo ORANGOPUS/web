@@ -1,1 +1,4 @@
-/*    /index.html   200 
+/api/assistant    /.netlify/functions/assistant    200!
+/api/github    /.netlify/functions/github    200!
+/api/project-writer    /.netlify/functions/project-writer    200!
+/*    /index.html   200
