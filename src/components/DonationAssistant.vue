@@ -8,7 +8,7 @@
       aria-label="Donation helper"
     >
       <header class="panel-head">
-        <img src="/orangopus-icon.svg" alt="" class="head-icon" />
+        <OctoMascot :size="52" :mood="mood" class="head-mascot" />
         <div class="head-text">
           <h2>Ask Orangopus</h2>
           <p>Questions about us or donating</p>
@@ -79,8 +79,8 @@
     >
       <svg v-if="open" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
       <template v-else>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" /></svg>
-        <span>Questions? Ask us</span>
+        <OctoMascot :size="56" class="launcher-mascot" />
+        <span class="launcher-label">Questions? Ask us</span>
       </template>
     </button>
   </div>
@@ -88,6 +88,8 @@
 
 <script lang="ts">
 import { defineComponent, nextTick } from "vue";
+import OctoMascot from "@/components/OctoMascot.vue";
+import type { OctopusMood } from "@/mascot/octopus";
 import { donationCurrency, stripeLinkFor, type DonationAmount, type DonationFrequency } from "@/config/donations";
 
 interface DonateAction {
@@ -107,11 +109,13 @@ const MAX_SENT_MESSAGES = 20;
 
 export default defineComponent({
   name: "DonationAssistant",
+  components: { OctoMascot },
   data() {
     return {
       open: false,
       draft: "",
       loading: false,
+      celebrating: false,
       messages: [] as ChatMessage[],
       starters: [
         "Where does my donation go?",
@@ -129,6 +133,12 @@ export default defineComponent({
       }
     } catch {
       // Storage can be blocked (private mode); the chat still works without it.
+    }
+  },
+  computed: {
+    mood(): OctopusMood {
+      if (this.loading) return "thinking";
+      return this.celebrating ? "happy" : "idle";
     }
   },
   watch: {
@@ -188,6 +198,10 @@ export default defineComponent({
       }
       this.messages.push({ role: "assistant", content: reply, actions });
       this.loading = false;
+      if (actions.length) {
+        this.celebrating = true;
+        setTimeout(() => { this.celebrating = false; }, 1500);
+      }
       this.focusAndScroll();
     },
     hrefFor(a: DonateAction): string {
@@ -242,6 +256,17 @@ export default defineComponent({
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .open .launcher { padding: 0; justify-content: center; }
+.assistant:not(.open) .launcher {
+  position: relative;
+  height: 56px;
+  padding: 0 22px 0 64px;
+  border: 1px solid rgba(255, 145, 61, 0.55);
+  border-radius: 28px;
+  background: #1d1b1a;
+  color: var(--orange-2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 24px rgba(255, 145, 61, 0.18);
+}
+.launcher-mascot { position: absolute; left: 4px; bottom: 6px; }
 .launcher:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(255, 145, 61, 0.4); }
 .launcher:focus-visible, .icon-btn:focus-visible, .send:focus-visible, .starters button:focus-visible, .donate-card:focus-visible {
   outline: 2px solid #fff;
@@ -272,7 +297,7 @@ export default defineComponent({
   padding: 14px 12px 14px 16px;
   border-bottom: 1px solid var(--line);
 }
-.head-icon { width: 34px; height: 34px; }
+.head-mascot { margin: -8px -6px -8px -8px; }
 .head-text { flex: 1; min-width: 0; }
 .head-text h2 { margin: 0; font: 400 18px/1.2 "Funnel Display", "Manrope", Helvetica, Arial, sans-serif; }
 .head-text p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
@@ -372,8 +397,9 @@ export default defineComponent({
 
 @media (max-width: 480px) {
   .assistant { right: 12px; bottom: 12px; }
-  .launcher span { display: none; }
-  .launcher { padding: 0; justify-content: center; }
+  .launcher-label { display: none; }
+  .assistant:not(.open) .launcher { width: 64px; height: 64px; padding: 0; border-radius: 50%; }
+  .launcher-mascot { left: 3px; bottom: 5px; }
   .panel { width: calc(100vw - 24px); height: calc(100vh - 88px); }
 }
 
