@@ -11,7 +11,7 @@
     
     <div class="donate-panel" v-if="isExpanded">
       <div class="panel-header">
-        <h3>Support Opus</h3>
+        <h3>Support Orangopus</h3>
         <button @click="toggleExpand" class="close-btn">
           <svg viewBox="0 0 24 24" fill="currentColor" class="close-icon">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
@@ -40,42 +40,24 @@
               class="amount-btn"
               :class="{ 'selected': selectedAmount === amount }"
             >
-              ${{ amount }}
+              {{ currency }}{{ amount }}
             </button>
-          </div>
-          
-          <div class="custom-amount">
-            <label for="custom-amount">Custom Amount:</label>
-            <input 
-              id="custom-amount"
-              v-model="customAmount"
-              type="number"
-              min="1"
-              placeholder="Enter amount"
-              class="custom-input"
-              @input="selectCustomAmount"
-            />
           </div>
         </div>
         
-        <a 
-          :href="opencollectiveUrl"
-          target="_blank"
-          rel="noopener noreferrer"
+        <router-link
+          :to="{ path: '/donate', query: { amount: selectedAmount } }"
           class="donate-link"
           @click="handleDonate"
         >
           <div class="donate-cta">
-            <span class="cta-text">Donate via OpenCollective</span>
-            <svg viewBox="0 0 24 24" fill="currentColor" class="external-icon">
-              <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
-            </svg>
+            <span class="cta-text">Donate {{ currency }}{{ selectedAmount }} with Stripe</span>
           </div>
-        </a>
+        </router-link>
         
         <div class="donation-info">
-          <p>💝 All donations are processed securely through OpenCollective</p>
-          <p>🔒 Your information is protected and never shared</p>
+          <p>🔒 Payments are processed securely by Stripe</p>
+          <p>You can give once or monthly on the next page</p>
         </div>
       </div>
     </div>
@@ -84,16 +66,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { donationCurrency } from "@/config/donations";
 
 export default defineComponent({
   name: "DonateButton",
   data() {
     return {
       isExpanded: false,
-      selectedAmount: 10,
-      customAmount: "",
-      donationAmounts: [5, 10, 25, 50, 100],
-      opencollectiveUrl: "https://opencollective.com/opus"
+      selectedAmount: "25",
+      donationAmounts: ["5", "25", "100"],
+      currency: donationCurrency
     };
   },
   methods: {
@@ -101,21 +83,11 @@ export default defineComponent({
       this.isExpanded = !this.isExpanded;
     },
     
-    selectAmount(amount: number) {
+    selectAmount(amount: string) {
       this.selectedAmount = amount;
-      this.customAmount = "";
-    },
-    
-    selectCustomAmount() {
-      if (this.customAmount) {
-        this.selectedAmount = parseInt(this.customAmount);
-      }
     },
     
     handleDonate() {
-      // Add analytics tracking if needed
-      console.log('Donate clicked:', this.selectedAmount);
-      
       // Close the panel after a short delay
       setTimeout(() => {
         this.isExpanded = false;

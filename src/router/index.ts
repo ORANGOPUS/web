@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import OpusWebapp from '@/screens/OpusWebapp.vue'
 import ProjectDetail from '@/components/ProjectDetail.vue'
 import Globe from '@/components/Globe.vue'
+import DonatePage from '@/screens/DonatePage.vue'
+import DonateThanks from '@/screens/DonateThanks.vue'
 
 const routes = [
   {
@@ -37,6 +39,16 @@ const routes = [
     path: '/globe',
     name: 'Globe',
     component: Globe
+  },
+  {
+    path: '/donate',
+    name: 'Donate',
+    component: DonatePage
+  },
+  {
+    path: '/donate/thanks',
+    name: 'DonateThanks',
+    component: DonateThanks
   }
 ]
 
@@ -60,7 +72,9 @@ router.beforeEach((to, from, next) => {
     'Dashboard': 'Dashboard - Opus',
     'Profile': 'Profile - Opus',
     'ProjectDetail': 'Project Details - Opus',
-    'Globe': 'Earth Data Globe - Opus'
+    'Globe': 'Earth Data Globe - Opus',
+    'Donate': 'Donate - Orangopus',
+    'DonateThanks': 'Thank you - Orangopus'
   }
   
   const title = titles[to.name as string] || 'Opus - Simplifying Development'
