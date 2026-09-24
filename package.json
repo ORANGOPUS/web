@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service serve",
     "build": "NODE_OPTIONS=--openssl-legacy-provider vue-cli-service build",
+    "dev:api": "node scripts/assistant-dev-server.mjs",
     "dev:assistant": "node scripts/assistant-dev-server.mjs"
   },
   "dependencies": {

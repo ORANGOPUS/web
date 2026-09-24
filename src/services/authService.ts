@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export interface User {
   id: string
@@ -25,6 +25,8 @@ class AuthService {
   }
 
   private async initializeAuth() {
+    if (!isSupabaseConfigured) return
+
     // Get initial session
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.user) {
@@ -136,6 +138,26 @@ class AuthService {
     } finally {
       this.setLoading(false)
     }
+  }
+
+  // Sign in (or sign up) with GitHub. Supabase sends the member back to the dashboard,
+  // and the session's provider token then lets the GitHub section list their repos.
+  async signInWithGitHub(): Promise<{ success: boolean; error?: string }> {
+    if (!isSupabaseConfigured) {
+      return { success: false, error: 'Sign-in is not switched on yet.' }
+    }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        scopes: 'read:user',
+        redirectTo: `${window.location.origin}/dashboard`
+      }
+    })
+    if (error) {
+      this.setError(error.message)
+      return { success: false, error: error.message }
+    }
+    return { success: true }
   }
 
   async signOut(): Promise<void> {

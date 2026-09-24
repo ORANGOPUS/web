@@ -25,6 +25,9 @@
           <Header />
         </div>
         <MissionStatement />
+        <div id="open-source">
+          <OpenSourceSection />
+        </div>
         <div id="github">
           <GitHubIntegration @share-repository="handleRepositoryShare" @import-repository="handleRepositoryImport" />
         </div>
@@ -90,6 +93,7 @@ import Navigation from "@/components/Navigation.vue";
 import Notification from "@/components/Notification.vue";
 import Header from "@/components/Header.vue";
 import MissionStatement from "@/components/MissionStatement.vue";
+import OpenSourceSection from "@/components/OpenSourceSection.vue";
 // @ts-ignore
 import GitHubIntegration from "@/components/GitHubIntegration.vue";
 // @ts-ignore
@@ -135,6 +139,7 @@ export default defineComponent({
     Notification,
     Header,
     MissionStatement,
+    OpenSourceSection,
     GitHubIntegration,
     SocialFeed,
     ProjectShowcase,
@@ -191,6 +196,8 @@ export default defineComponent({
         this.showDashboard = true;
       } else if (this.initialView === 'profile') {
         this.showProfile = true;
+      } else if (this.initialView === 'login') {
+        this.showAuthPage('login');
       }
     },
     
@@ -205,7 +212,7 @@ export default defineComponent({
       if (notification) {
         notification.success(
           'Welcome!',
-          'You have successfully signed in to Opus.'
+          'You have signed in to Orangopus.'
         );
       }
     },

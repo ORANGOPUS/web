@@ -5,13 +5,13 @@
       id="donation-assistant-panel"
       class="panel"
       role="dialog"
-      aria-label="Donation helper"
+      aria-label="Orangopus helper"
     >
       <header class="panel-head">
         <OctoMascot :size="66" :mood="mood" class="head-mascot" />
         <div class="head-text">
           <h2>Ask Orangopus</h2>
-          <p>Questions about us or donating</p>
+          <p>Projects, community and donating</p>
         </div>
         <button type="button" class="icon-btn" aria-label="Start a new chat" title="New chat" @click="reset">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" /></svg>
@@ -23,7 +23,7 @@
 
       <div ref="log" class="log" aria-live="polite">
         <div class="msg assistant-msg">
-          <p>Hi! I can tell you about Orangopus, where donations go, and help you pick a way to give.</p>
+          <p>Hi! I can tell you about Orangopus, find projects and what we're building on GitHub, and help you pick a way to give.</p>
         </div>
 
         <template v-for="(m, i) in messages" :key="i">
@@ -35,6 +35,7 @@
             :key="i + '-' + j"
             class="donate-card"
             :href="hrefFor(a)"
+            v-bind="isExternal(a) ? { target: '_blank', rel: 'noopener' } : {}"
           >
             <span class="card-label">{{ labelFor(a) }}</span>
             <span class="card-sub">{{ subFor(a) }}</span>
@@ -98,10 +99,30 @@ interface DonateAction {
   amount: DonationAmount;
 }
 
+interface LinkAction {
+  type: "link";
+  label: string;
+  href: string;
+}
+
+type AssistantAction = DonateAction | LinkAction;
+
+// Same rule as isSafeLink in server/donation-assistant.mjs: a site path or a GitHub URL.
+function isSafeHref(href: unknown): href is string {
+  if (typeof href !== "string" || href.length > 300) return false;
+  return /^\/(?!\/)[\w\-./?=&%#]*$/.test(href) || /^https:\/\/github\.com\/[\w.-]+(\/[\w.-]+)*\/?$/.test(href);
+}
+
+function isValidAction(a: any): a is AssistantAction {
+  if (!a) return false;
+  if (a.type === "donate") return true;
+  return a.type === "link" && typeof a.label === "string" && isSafeHref(a.href);
+}
+
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
-  actions?: DonateAction[];
+  actions?: AssistantAction[];
 }
 
 const STORAGE_KEY = "orangopus-assistant";
@@ -118,9 +139,9 @@ export default defineComponent({
       celebrating: false,
       messages: [] as ChatMessage[],
       starters: [
-        "Where does my donation go?",
-        "Should I give monthly or one-off?",
-        "Help me choose an amount"
+        "What are you building on GitHub?",
+        "Show me projects I could join",
+        "Where does my donation go?"
       ]
     };
   },
@@ -128,7 +149,7 @@ export default defineComponent({
     try {
       const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null");
       if (saved && Array.isArray(saved.messages)) {
-        this.messages = saved.messages;
+        this.messages = saved.messages.map((m: ChatMessage) => ({ ...m, actions: (m.actions || []).filter(isValidAction) }));
         this.open = !!saved.open;
       }
     } catch {
@@ -183,7 +204,7 @@ export default defineComponent({
         .map(m => ({ role: m.role, content: m.content }));
 
       let reply = "Sorry, I can't answer right now. You can still give on the donate page.";
-      let actions: DonateAction[] = [];
+      let actions: AssistantAction[] = [];
       try {
         const res = await fetch("/api/assistant", {
           method: "POST",
@@ -192,26 +213,32 @@ export default defineComponent({
         });
         const data = await res.json().catch(() => null);
         if (data && typeof data.reply === "string") reply = data.reply;
-        if (data && Array.isArray(data.actions)) actions = data.actions.filter((a: DonateAction) => a && a.type === "donate");
+        if (data && Array.isArray(data.actions)) actions = data.actions.filter(isValidAction);
       } catch {
         // Network failure: keep the fallback reply.
       }
       this.messages.push({ role: "assistant", content: reply, actions });
       this.loading = false;
-      if (actions.length) {
+      if (actions.some(a => a.type === "donate")) {
         this.celebrating = true;
         setTimeout(() => { this.celebrating = false; }, 2500);
       }
       this.focusAndScroll();
     },
-    hrefFor(a: DonateAction): string {
+    isExternal(a: AssistantAction): boolean {
+      return a.type === "link" && a.href.startsWith("https://");
+    },
+    hrefFor(a: AssistantAction): string {
+      if (a.type === "link") return a.href;
       return stripeLinkFor(a.frequency, a.amount) || `/donate?freq=${a.frequency}&amount=${a.amount}`;
     },
-    labelFor(a: DonateAction): string {
+    labelFor(a: AssistantAction): string {
+      if (a.type === "link") return a.label;
       if (a.amount === "custom") return "Donate an amount you choose";
       return `Donate ${donationCurrency}${a.amount}${a.frequency === "monthly" ? " a month" : ""}`;
     },
-    subFor(a: DonateAction): string {
+    subFor(a: AssistantAction): string {
+      if (a.type === "link") return a.href.startsWith("https://github.com/") ? "Opens on GitHub" : "Opens on this site";
       return stripeLinkFor(a.frequency, a.amount) ? "Secure checkout on Stripe" : "Opens the donate page";
     }
   }
