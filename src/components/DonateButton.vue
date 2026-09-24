@@ -101,7 +101,8 @@ export default defineComponent({
 .donate-button-container {
   position: fixed;
   bottom: 30px;
-  right: 30px;
+  /* Bottom-left, so it never sits under the helper chat in the bottom-right corner */
+  left: 30px;
   z-index: 1000;
   font-family: "Manrope", Helvetica, Arial, sans-serif;
 }
@@ -151,7 +152,7 @@ export default defineComponent({
 .donate-panel {
   position: absolute;
   bottom: 70px;
-  right: 0;
+  left: 0;
   width: 320px;
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(20px);
@@ -383,12 +384,12 @@ export default defineComponent({
 @media (max-width: 768px) {
   .donate-button-container {
     bottom: 20px;
-    right: 20px;
+    left: 20px;
   }
   
   .donate-panel {
     width: 280px;
-    right: -20px;
+    left: 0;
   }
   
   .donation-amounts {
@@ -408,7 +409,7 @@ export default defineComponent({
 @media (max-width: 480px) {
   .donate-panel {
     width: calc(100vw - 40px);
-    right: -20px;
+    left: 0;
   }
 }
 </style> 
