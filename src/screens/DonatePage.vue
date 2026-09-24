@@ -78,24 +78,24 @@
 
         <aside class="side">
           <div class="card">
-            <h3>Gift Aid</h3>
+            <h3>Where it goes</h3>
             <p>
-              If you're a UK taxpayer, Gift Aid adds 25p to every £1 you give at no cost to you.
-              Tick the Gift Aid box on the checkout page.
+              As a non-profit, every donation goes into supporting our projects, maintaining our
+              infrastructure and making creation accessible to everyone.
             </p>
           </div>
           <div class="card">
-            <h3>Where it goes</h3>
+            <h3>Open and grassroots</h3>
             <p>
-              Your donation funds telescopes, transport, planetarium tickets and outreach kit.
-              We publish an annual report showing exactly how it was spent.
+              Orangopus is a nonprofit open collective supporting creators of all backgrounds.
+              No gatekeepers, no agendas.
             </p>
           </div>
           <div class="card">
             <h3>Monthly giving</h3>
             <p>
-              A monthly gift lets us plan a full year ahead. Stripe emails you a link to change or
-              cancel it at any time.
+              A monthly gift lets us plan ahead. Stripe emails you a link to change or cancel it
+              at any time.
             </p>
           </div>
         </aside>
@@ -136,7 +136,7 @@ export default defineComponent({
   computed: {
     impactText(): string {
       if (this.amount === "custom") {
-        return "You choose the amount on the next screen. Every pound helps get young people under a dark sky.";
+        return "You choose the amount on the next screen. Every gift goes straight into our projects and community.";
       }
       const tier = this.tiers.find(t => t.amount === this.amount);
       if (!tier) return "";

@@ -2,7 +2,7 @@
   <nav class="navigation" :class="{ 'scrolled': isScrolled }">
     <div class="nav-content">
       <div class="nav-brand">
-                <img src="https://canny-assets.io/icons/4337ffcf7d94aaf9b2fbb60ca10ca2fe.png" alt="Opus" class="nav-logo" />
+                <img src="/orangopus-logo-white.svg" alt="Orangopus" class="nav-logo" />
 
       </div>
       

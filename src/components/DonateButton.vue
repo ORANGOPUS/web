@@ -21,14 +21,14 @@
       
       <div class="panel-content">
         <p class="support-text">
-          Help us continue building amazing tools for developers. Your support enables us to:
+          Orangopus is a grassroots nonprofit open collective supporting creators of all backgrounds. Your donation helps us:
         </p>
         
         <ul class="benefits-list">
-          <li>✨ Keep the platform free and open source</li>
-          <li>🚀 Add new features and improvements</li>
-          <li>🛠️ Maintain and support the community</li>
-          <li>📚 Create educational content and tutorials</li>
+          <li>🪐 Keep Orangopus free and open to everyone</li>
+          <li>🚀 Back new community projects</li>
+          <li>🛰️ Maintain the infrastructure our projects run on</li>
+          <li>🌌 Make creation accessible to people of any background</li>
         </ul>
         
         <div class="donation-options">

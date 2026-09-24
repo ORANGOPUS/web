@@ -8,8 +8,8 @@
         <div class="footer-brand">
           <img
             class="logo"
-            alt="Opus Logo"
-            src="https://c.animaapp.com/bX3QfjDJ/img/simplification-1.svg"
+            alt="Orangopus"
+            src="/orangopus-logo-white.svg"
           />
           <p class="brand-description">
             A grassroots nonprofit open collective supporting creators of all backgrounds.

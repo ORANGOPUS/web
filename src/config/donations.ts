@@ -51,20 +51,20 @@ export const donationTiers: DonationTier[] = [
   {
     amount: "5",
     name: "Low Earth Orbit",
-    impactOnce: "buys a printed star chart and red-light torch for a young stargazer.",
-    impactMonthly: "keeps a loan telescope in service at a partner school all year."
+    impactOnce: "helps keep Orangopus free and open for every creator who joins.",
+    impactMonthly: "helps cover the infrastructure our community projects run on."
   },
   {
     amount: "25",
     name: "Lunar",
-    impactOnce: "funds a telescope night for a class of ten, with a guide and hot chocolate.",
-    impactMonthly: "runs a monthly astronomy club for one community group."
+    impactOnce: "helps fund tools and resources for creators starting their first project.",
+    impactMonthly: "gives our projects steady support they can plan around."
   },
   {
     amount: "100",
     name: "Deep Space",
-    impactOnce: "sends a school group to a planetarium show, travel included.",
-    impactMonthly: "funds a full term of outreach visits to schools that rarely get them."
+    impactOnce: "helps us back new community projects and get them off the ground.",
+    impactMonthly: "helps sustain our mission of making creation accessible to everyone."
   }
 ];
 
